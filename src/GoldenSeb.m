@@ -1,4 +1,3 @@
-%%%% Author : Sebastien Scannella
 %%%% Ce programme permet d'importer les XDF files, de faire les
 %%%% pretraitements necessaires à l'utilisation d'automagic, de sauvegarder
 %%%% les données en .mat en .set sous la structure BIDS demandée par automagic
