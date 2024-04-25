@@ -3,6 +3,7 @@
 input_folder = 'E:\ISAE-Autre\SeminaireMai2024\EEGPipeline\Data\EEG';
 file_name = 'GoldenS.set';
 output_folder = 'E:\ISAE-Autre\SeminaireMai2024\EEGPipeline\Data\Epochs';
+advanced = input("Advanced Pipeline? [Y/N]","s");
 
 %cd(input_folder);
 [ALLEEG, EEG, CURRENTSET] = eeglab;
@@ -33,20 +34,24 @@ saveEpoch(EEG, ALLEEG,output_folder, 'F pressed',[-0.5 5]);
 saveEpoch(EEG, ALLEEG,output_folder, 'D pressed',[-0.5 5]);
 
 %% ADVANCED PIPELINE
-[ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 3,'retrieve',1,'study',0); %Set EEG data back to first EEG set
-%% Cleaning
-EEG = pop_rejchan(EEG, 'elec', 1:64 ,'threshold',10,'norm','on','measure','kurt'); %reject bad channel based on dispersion
-[ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'gui','off'); 
-eeglab redraw
-
-%% ICA
-EEG = pop_runica(EEG, 'extended',1,'interupt','on'); % To actually run ICA and calculate weights
-EEG = pop_iclabel(EEG, 'default');%Too see how comonent are labelled
-EEG = pop_icflag(EEG, [NaN NaN;0.8 1;0.8 1;NaN NaN;NaN NaN;0.8 1;0.8 1]);% To flag bad component
-EEG = pop_subcomp( EEG, [1   2 ], 0);% !!Component indexes must be checked !!
-[ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'gui','off'); 
-eeglab redraw
-
+if advanced == "Y"
+    
+    [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 3,'retrieve',1,'study',0); %Set EEG data back to first EEG set
+    %% Cleaning
+    EEG = pop_rejchan(EEG, 'elec', 1:64 ,'threshold',10,'norm','on','measure','kurt'); %reject bad channel based on dispersion
+    [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'gui','off');
+    eeglab redraw
+    
+    %% ICA
+    EEG = pop_runica(EEG, 'extended',1,'interupt','on'); % To actually run ICA and calculate weights
+    EEG = pop_iclabel(EEG, 'default');%Too see how comonent are labelled
+    EEG = pop_icflag(EEG, [NaN NaN;0.8 1;0.8 1;NaN NaN;NaN NaN;0.8 1;0.8 1]);% To flag bad component
+    EEG = pop_subcomp( EEG, [1   2 ], 0);% !!Component indexes must be checked !!
+    [ALLEEG, EEG, CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'gui','off');
+    eeglab redraw
+else
+    disp("End of Epoch Extraction");
+end
 %% FUNCTIONS
 function saveEpoch(EEG, ALLEEG,output_folder, triggerlabel, timelimits)
 EEG = pop_epoch( EEG, {triggerlabel}, timelimits, 'epochinfo', 'yes');
